@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"errors"
 	"os"
-	"strings"
 )
 
 //
@@ -27,8 +26,18 @@ func loadFromFile(path string) error {
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
-		parts := strings.Split(scanner.Text(), "=")
-		if len(parts) == 1 {
+		var parts [2]string
+		currPart := 0
+
+		for _, c := range scanner.Text() {
+			if c == '=' && currPart == 0 {
+				currPart = 1
+				continue
+			}
+			parts[currPart] += string(c)
+		}
+
+		if len(parts) != 2 {
 			return errors.New("wrong format for " + scanner.Text())
 		}
 
